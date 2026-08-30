@@ -1,4 +1,4 @@
-"""
+﻿"""
 Skylark BI Agent - Streamlit Application.
 Conversational Business Intelligence assistant powered by Claude tool use and live Monday.com data.
 """
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # Set Page Config
 st.set_page_config(
     page_title="Skylark BI Agent | Executive Intelligence",
-    page_icon="??",
+    page_icon="*",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -38,34 +38,13 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main .block-container {
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
         max-width: 1200px;
     }
-    .metric-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.85rem;
-    }
-    .badge-live {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    .badge-cached {
-        background-color: #e2e3e5;
-        color: #383d41;
-        border: 1px solid #d6d8db;
-    }
     .stChatMessage {
-        border-radius: 10px;
+        border-radius: 8px;
         margin-bottom: 0.75rem;
-    }
-    .quick-query-btn {
-        margin-right: 5px;
-        margin-bottom: 5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -77,16 +56,17 @@ if "leadership_markdown" not in st.session_state:
     st.session_state.leadership_markdown = None
 if "initialized" not in st.session_state:
     st.session_state.initialized = False
+if "anthropic_api_key" not in st.session_state:
+    st.session_state.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY", "")
 
 # Sidebar
 with st.sidebar:
-    st.image("https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=150&auto=format&fit=crop&q=60", width=60)
     st.title("Skylark BI Agent")
     st.caption("Founder-Level Business Intelligence for Monday.com")
     st.divider()
 
     # Connection Status
-    st.subheader("?? Connection Status")
+    st.subheader("[Connection Status]")
     try:
         cache_data = get_cached_data()
         is_live = cache_data.get("is_connected_live", False)
@@ -95,25 +75,25 @@ with st.sidebar:
         time_str = last_refreshed.strftime("%H:%M:%S UTC") if last_refreshed else "Never"
 
         if is_live:
-            st.success(f"?? **Live Monday.com API**\n\n{status_msg}")
+            st.success(f"**Live Monday.com API**\n\n{status_msg}")
         else:
-            st.info(f"?? **Sandbox Reference Mode**\n\n{status_msg}")
+            st.info(f"**Sandbox Reference Mode**\n\n{status_msg}")
         
-        st.caption(f"?? **Last Refreshed:** `{time_str}`")
+        st.caption(f"Last Refreshed: `{time_str}`")
 
     except MondayAuthError as auth_err:
-        st.error(f"?? **Authentication Error**\n\n{str(auth_err)}")
+        st.error(f"**Authentication Notice**\n\n{str(auth_err)}")
     except MondayUnavailableError as unav_err:
-        st.warning(f"?? **API Unavailable**\n\n{str(unav_err)}")
+        st.warning(f"**API Unavailable**\n\n{str(unav_err)}")
     except Exception as ex:
-        st.error(f"?? **Connection Error:** {ex}")
+        st.error(f"**Connection Error:** {ex}")
 
     # Refresh Button
-    if st.button("?? Refresh Data Cache", use_container_width=True):
+    if st.button("Refresh Data Cache", use_container_width=True):
         with st.spinner("Fetching latest updates from Monday.com..."):
             try:
                 refresh_cache(force=True)
-                st.toast("Data cache successfully refreshed!", icon="?")
+                st.toast("Data cache successfully refreshed!")
                 st.rerun()
             except Exception as e:
                 st.error(f"Refresh failed: {e}")
@@ -121,7 +101,7 @@ with st.sidebar:
     st.divider()
 
     # Leadership Update Action
-    st.subheader("?? Executive Briefings")
+    st.subheader("[Executive Briefings]")
     if st.button("Generate Leadership Update", type="primary", use_container_width=True):
         with st.spinner("Synthesizing live pipeline & operations briefing..."):
             try:
@@ -138,7 +118,7 @@ with st.sidebar:
     if st.session_state.leadership_markdown:
         today_slug = datetime.now().strftime("%Y_%m_%d")
         st.download_button(
-            label="?? Download Briefing (.md)",
+            label="Download Briefing (.md)",
             data=st.session_state.leadership_markdown,
             file_name=f"leadership_update_{today_slug}.md",
             mime="text/markdown",
@@ -146,14 +126,16 @@ with st.sidebar:
         )
 
     st.divider()
-    with st.expander("?? Connection Settings & Keys", expanded=False):
-        st.markdown(
-            "**API Credentials**\n"
-            "- Set `MONDAY_API_TOKEN` to query live boards.\n"
-            "- Set `ANTHROPIC_API_KEY` for Claude tool use.\n\n"
-            "*Credentials are loaded securely from `.env` or Streamlit Secrets.*"
-        )
-        if st.button("Clear Chat History"):
+    with st.expander("[Settings & API Keys]", expanded=False):
+        st.markdown("**Optional Live AI Configuration**")
+        key_input = st.text_input("Anthropic API Key", value=st.session_state.anthropic_api_key, type="password", placeholder="sk-ant-api03-...")
+        if key_input != st.session_state.anthropic_api_key:
+            st.session_state.anthropic_api_key = key_input
+            st.toast("API key updated!")
+        
+        st.caption("If no API key is entered, the agent uses the built-in deterministic query engine seamlessly.")
+        
+        if st.button("Clear Chat History", use_container_width=True):
             st.session_state.messages = []
             st.session_state.leadership_markdown = None
             st.rerun()
@@ -166,49 +148,46 @@ if not st.session_state.initialized:
         deals_len = len(cache_data.get("deals_df", []))
         
         welcome_text = (
-            f"?? **Welcome to Skylark BI Agent!**\n\n"
-            f"I am connected to your live Monday.com workspace:\n"
+            f"**Welcome to Skylark BI Agent!**\n\n"
+            f"Connected datasets:\n"
             f"- **Work Orders:** `{wo_len}` records\n"
             f"- **Deals Pipeline:** `{deals_len}` records\n\n"
-            f"Ask me anything about pipeline value, win rates, sectoral performance, overdue projects, or cross-board insights."
+            f"Ask any business intelligence question regarding sales pipeline, sectoral performance, overdue projects, or cross-board analytics."
         )
         st.session_state.messages.append({
             "role": "assistant",
             "content": welcome_text
         })
         st.session_state.initialized = True
-    except MondayAuthError as e:
-        st.error(f"### ?? Monday.com Authentication Required\n{str(e)}")
-        st.info("?? **Quick Start:** You can add `MONDAY_API_TOKEN=your_token` and `ANTHROPIC_API_KEY=your_key` to a `.env` file.")
     except Exception as e:
         st.warning(f"Initialization notice: {e}")
 
 # Header
-st.header("?? Skylark Business Intelligence Agent")
+st.header("Skylark Business Intelligence Agent")
 st.caption("Ask questions across sales opportunities, deal conversions, active work orders, and operational delivery metrics.")
 
-# Quick Sample Query Pills
-st.markdown("**Suggested Founder Queries:**")
+# Quick Sample Query Buttons
+st.markdown("**Suggested Executive Queries:**")
 col1, col2, col3 = st.columns(3)
 with col1:
-    if st.button("?? What's our total deal pipeline value right now?", use_container_width=True):
+    if st.button("Total deal pipeline value right now?", use_container_width=True):
         st.session_state.selected_query = "What's our total deal pipeline value right now?"
 with col2:
-    if st.button("? How's our pipeline looking for renewables/powerline?", use_container_width=True):
+    if st.button("Pipeline for renewables / powerline?", use_container_width=True):
         st.session_state.selected_query = "How's our pipeline looking for the renewables and powerline sectors?"
 with col3:
-    if st.button("?? How many work orders are overdue?", use_container_width=True):
+    if st.button("How many work orders are overdue?", use_container_width=True):
         st.session_state.selected_query = "How many work orders are overdue right now?"
 
 col4, col5, col6 = st.columns(3)
 with col4:
-    if st.button("?? Won deals with no work orders yet?", use_container_width=True):
+    if st.button("Won deals with no work orders yet?", use_container_width=True):
         st.session_state.selected_query = "Which won deals haven't started work orders yet?"
 with col5:
-    if st.button("?? Sectors with high work orders but low won deals?", use_container_width=True):
+    if st.button("Sectors with high WOs but low won deals?", use_container_width=True):
         st.session_state.selected_query = "Which sectors have the most work orders but the fewest won deals?"
 with col6:
-    if st.button("?? Show Data Quality Report", use_container_width=True):
+    if st.button("Show Data Quality Report", use_container_width=True):
         st.session_state.selected_query = "What is the data quality and completeness across our Work Orders and Deals boards?"
 
 # Display Chat History
@@ -243,7 +222,7 @@ if user_input:
                 "refresh_data": "Refreshing data cache from Monday.com..."
             }
             label = labels.get(tool_name, f"Executing {tool_name}...")
-            with status_placeholder.status(f"?? {label}", expanded=False):
+            with status_placeholder.status(f"[{label}]", expanded=False):
                 st.write(f"Tool Input: `{tool_input}`")
 
         with st.spinner("Analyzing business data..."):

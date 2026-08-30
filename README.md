@@ -1,5 +1,8 @@
 ﻿# Skylark Monday.com Business Intelligence Agent
 
+**Live Hosted Prototype:** [https://15afa4b0267912.lhr.life](https://15afa4b0267912.lhr.life)  
+**GitHub Repository:** [https://github.com/Elaina2005/skylark](https://github.com/Elaina2005/skylark)
+
 An autonomous, founder-level AI Business Intelligence agent that integrates directly with **Monday.com GraphQL API v2** and utilizes **Anthropic Claude Tool Use** (`claude-3-7-sonnet` / `claude-3-5-sonnet`) to deliver instant, context-aware answers across sales pipeline and operational project execution data.
 
 ---

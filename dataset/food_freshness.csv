@@ -1,0 +1,46 @@
+Food,Category,EstimatedFreshnessHours
+Plain Rice,Rice,4
+Biryani,Rice and Meat,3
+Fried Rice,Rice,4
+Lemon Rice,Rice,5
+Curd Rice,Dairy and Rice,3
+Tomato Rice,Rice,4
+Sambar Rice,Rice and Curry,4
+Pongal,Rice and Lentil,4
+Idli,Breakfast,6
+Dosa,Breakfast,5
+Vada,Fried,6
+Poori,Fried,6
+Chapati,Bread,8
+Roti,Bread,8
+Parotta,Bread,8
+Naan,Bread,8
+Vegetable Curry,Curry,4
+Chicken Curry,Meat,3
+Mutton Curry,Meat,3
+Fish Curry,Seafood,2
+Egg Curry,Egg,3
+Dal,Lentils,4
+Rasam,Soup,5
+Vegetable Soup,Soup,5
+Chicken Soup,Meat Soup,3
+Noodles,Noodles,4
+Pasta,Pasta,4
+Macaroni,Pasta,4
+Vegetable Pulao,Rice,4
+Chicken Pulao,Rice and Meat,3
+Kichdi,Rice and Lentil,4
+Upma,Breakfast,6
+Aloo Curry,Vegetable,4
+Paneer Curry,Dairy,3
+Mixed Vegetable Curry,Vegetable,4
+Samosa,Fried,6
+Pakora,Fried,5
+Cutlet,Fried,5
+Sandwich,Ready to Eat,3
+Vegetable Sandwich,Ready to Eat,3
+Egg Sandwich,Egg,2
+Chicken Sandwich,Meat,2
+Fruit Salad,Fruit,3
+Kheer,Dairy,3
+Payasam,Dairy,3
